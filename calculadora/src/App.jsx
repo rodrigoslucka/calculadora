@@ -169,48 +169,54 @@ function App() {
   }
 
   const calcFechaGenerales = () => {
-    let totalDays = 0;
-    let totalMonths = 0;
-    let totalYears = 0;
-  
+    let years = 0;
+    let months = 0;
+    let days = 0;
+
     fechasModificadas.forEach(fecha => {
-      totalDays += fecha.days;
-      totalMonths += fecha.months;
-      totalYears += fecha.years;
+      years += fecha.years;
+      months += fecha.months;
+      days += fecha.days
+
+
+      if (months >= 11) {
+        years++;
+        months = months - 11;
+      }
+
+      if (days >= 30) {
+        months++;
+        days = days - 30;
+      }
     });
-  
-    // Ajustar desbordamientos
-    totalMonths += Math.floor(totalDays / 30);
-    totalDays = totalDays % 30;
-  
-    totalYears += Math.floor(totalMonths / 12);
-    totalMonths = totalMonths % 12;
-  
-    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
-  };
+
+    console.log(months);
+
+    return `${years} años, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} dias`;
+  }
   
   const calcFechaSpecific = () => {
-    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial);
-    let totalDays = 0;
-    let totalMonths = 0;
-    let totalYears = 0;
-  
+    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial !== false);
+    let years = 0;
+    let months = 0;
+    let days = 0;
     fechasSpecific.forEach(fecha => {
-      totalDays += fecha.days;
-      totalMonths += fecha.months;
-      totalYears += fecha.years;
-    });
-  
-    // Ajustar desbordamientos
-    totalMonths += Math.floor(totalDays / 30);
-    totalDays = totalDays % 30;
-  
-    totalYears += Math.floor(totalMonths / 12);
-    totalMonths = totalMonths % 12;
-  
-    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
-  };
+      years += fecha.years;
+      months += fecha.months;
+      days += fecha.days
 
+      if (months >= 11) {
+        years++;
+        months = months - 11;
+      }
+
+      if (days >= 30) {
+        months++;
+        days = days - 30;
+      }
+    });
+    return `${years} ${years === 1 ? 'año' : 'años'}, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} ${days === 1 ? 'dia' : 'dias'}`;
+  }
   return (
     <>
       <div className=' bg-indigo-700 p-16 shadow-gray-900'>
