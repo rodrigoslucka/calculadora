@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.sombra {
+	box-shadow: 0px 9px 10px -10px rgba(0, 0, 0, 0.51);
+	-webkit-box-shadow: 0px 9px 10px -10px rgba(0, 0, 0, 0.51);
+	-moz-box-shadow: 0px 9px 10px -10px rgba(0, 0, 0, 0.51);
+}
+
+/*** SWIPE LIST OVERRIDES **/
+.swipe-action__leading {
+	background-color: #3b82f6;;
+	color: #fff;
+	margin-bottom: 1rem;
+}
+
+.swipe-action__trailing {
+	background-color: #db2777;
+	color: #fff;
+	margin-bottom: 1rem;
+}
+
+.swipeable-list .swipe-action {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1rem;
+	text-align: right;
+}
