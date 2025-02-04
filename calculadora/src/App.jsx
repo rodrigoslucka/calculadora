@@ -169,54 +169,80 @@ function App() {
   }
 
   const calcFechaGenerales = () => {
-    let years = 0;
-    let months = 0;
-    let days = 0;
-
+    let totalDays = 0;
+    let totalMonths = 0;
+    let totalYears = 0;
+  
     fechasModificadas.forEach(fecha => {
-      years += fecha.years;
-      months += fecha.months;
-      days += fecha.days
-
-
-      if (months >= 11) {
-        years++;
-        months = months - 11;
-      }
-
-      if (days >= 30) {
-        months++;
-        days = days - 30;
-      }
+      totalDays += fecha.days;
+      totalMonths += fecha.months;
+      totalYears += fecha.years;
     });
-
-    console.log(months);
-
-    return `${years} años, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} dias`;
-  }
+  
+    // Ajustar desbordamientos
+    if (totalDays >= 30) {
+      totalMonths += Math.floor(totalDays / 30);
+      totalDays = totalDays % 30;
+    }
+  
+    if (totalMonths >= 12) {
+      totalYears += Math.floor(totalMonths / 12);
+      totalMonths = totalMonths % 12;
+    }
+  
+    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
+  };
   
   const calcFechaSpecific = () => {
-    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial !== false);
-    let years = 0;
-    let months = 0;
-    let days = 0;
+    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial);
+    let totalDays = 0;
+    let totalMonths = 0;
+    let totalYears = 0;
+  
     fechasSpecific.forEach(fecha => {
-      years += fecha.years;
-      months += fecha.months;
-      days += fecha.days
-
-      if (months >= 11) {
-        years++;
-        months = months - 11;
-      }
-
-      if (days >= 30) {
-        months++;
-        days = days - 30;
-      }
+      totalDays += fecha.days;
+      totalMonths += fecha.months;
+      totalYears += fecha.years;
     });
-    return `${years} ${years === 1 ? 'año' : 'años'}, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} ${days === 1 ? 'dia' : 'dias'}`;
+  
+    // Ajustar desbordamientos
+    if (totalDays >= 30) {
+      totalMonths += Math.floor(totalDays / 30);
+      totalDays = totalDays % 30;
+    }
+  
+    if (totalMonths >= 12) {
+      totalYears += Math.floor(totalMonths / 12);
+      totalMonths = totalMonths % 12;
+    }
+  
+    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
+  };
+
+  const handleCalcDatesGeneral = () => {
+    setResultadoSpecific('');
+    setRespuesta(false);
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    setRespuesta(true);
+    const resultadoGeneral = calcFechaGenerales();
+    setResultado(resultadoGeneral)
   }
+
+  const handleCalcDatesSpecific = () => {
+    setResultado('')
+    setRespuesta(false);
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    setRespuesta(true);
+    const resultadoSpecifico = calcFechaSpecific();
+    setResultadoSpecific(resultadoSpecifico)
+  }
+
   return (
     <>
       <div className=' bg-indigo-700 p-16 shadow-gray-900'>
