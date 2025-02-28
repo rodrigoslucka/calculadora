@@ -368,7 +368,7 @@ function App() {
         } 
                
       </main> 
-        <footer className="bg-indigo-900 text-white text-center p-4 w-full">
+        <footer className="bg-gray-800 text-white text-center p-4 w-full">
           Copyright © Consultora Quimeras e Icarus Consultores - Desarrollado por Ing. Joel Llanos Puita / Rodrigo Slucka Zárate - Cel. 72549764 - Cel. 60458465
         </footer>
     </div>  
