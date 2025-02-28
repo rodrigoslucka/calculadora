@@ -15,11 +15,10 @@ const Modal = ({
 }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="relative bg-white p-5 rounded-lg flex flex-col justify-center items-center gap-5 w-96 h-auto shadow-lg border border-gray-300">
-                
-                {/* Logos laterales */}
-                <img src="/logo-left.png" alt="Logo Izquierdo" className="absolute left-[-50px] w-16 h-16" />
-                <img src="/logo-right.png" alt="Logo Derecho" className="absolute right-[-50px] w-16 h-16" />
+			{/* Logos laterales */}
+			<img src="/logo-left.png" alt="Logo Izquierdo" className="absolute left-[-50px] w-16 h-16" />
+            <img src="/logo-right.png" alt="Logo Derecho" className="absolute right-[-50px] w-16 h-16" />
+            <div className="relative bg-white p-5 rounded-lg flex flex-col justify-center items-center gap-5 w-96 h-auto shadow-lg border border-gray-300">       
                 
                 {/* Botón de cierre */}
                 <button
@@ -75,13 +74,12 @@ const Modal = ({
                     onClick={() => handleRegistrarFecha()}
                 >
                     {editingId ? 'Guardar Cambios' : 'Registrar'}
-                </button>
-
-                {/* Pie de página */}
-                <footer className="text-sm text-gray-500 mt-4 text-center border-t pt-2 w-full">
-                    © 2024 Mi Aplicación - Todos los derechos reservados
-                </footer>
+                </button>                
             </div>
+			{/* Pie de página */}
+			<footer className="text-sm text-gray-500 mt-4 text-center border-t pt-2 w-full">
+                    © 2024 Mi Aplicación - Todos los derechos reservados
+            </footer>
         </div>
     );
 };
