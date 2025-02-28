@@ -249,8 +249,8 @@ function App() {
       <main className="flex-grow">      
         <div className=' bg-indigo-900 p-16 shadow-gray-900'>        
           <div className='bg-white max-w-3xl shadow-lg rounded-lg p-7 mx-auto'>
-            <img src="../public/Logo_Icarus.png" alt="Logo Izquierdo" className="rounded float-start w-24 h-24 mx-4" />          
-            <img src="../public/Quimeras_Logo.png" alt="Logo Derecho" className="rounded float-end w-24 h-24 mx-4" />   
+            <img src="/Logo_Icarus.png" alt="Logo Izquierdo" className="rounded float-start w-24 h-24 mx-4" />          
+            <img src="/Quimeras_Logo.png" alt="Logo Derecho" className="rounded float-end w-24 h-24 mx-4" />   
             <h1 className="text-xl md:text-3xl uppercase text-center">Calculadora de Fechas</h1>
 
             <div className="flex justify-center">
