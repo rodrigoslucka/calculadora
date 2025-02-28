@@ -30,36 +30,38 @@ function App() {
 
 
   useEffect(() => {
+    // Hacer los calculos aqui
     setFechasModificadas(fechas.map(fecha => {
       const dateObjStart = new Date(fecha.startDate + 'T00:00:00');
       const dateObjEnd = new Date(fecha.endDate + 'T00:00:00');
-  
-      // Calculamos la diferencia en milisegundos
+
+      // calculamos el Total de dias trabajados en las fechas seleccionadas
       const differenceInMilliseconds = dateObjEnd - dateObjStart;
-      const totalDias = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24)) + 1;
-  
-      // Calculamos años, meses y días
-      let years = dateObjEnd.getFullYear() - dateObjStart.getFullYear();
-      let months = dateObjEnd.getMonth() - dateObjStart.getMonth();
-      let days = dateObjEnd.getDate() - dateObjStart.getDate();
-  
-      // Ajustamos los meses y días si es necesario
-      if (days < 0) {
-        months--;
-        const lastDayOfMonth = new Date(dateObjEnd.getFullYear(), dateObjEnd.getMonth(), 0).getDate();
-        days += lastDayOfMonth;
+      let resultado = differenceInMilliseconds / (1000 * 60 * 60 * 24) + 1;
+
+      // Operacion para cada fecha
+      let days = 0;
+      let months = 0;
+      let years = 0;
+
+      // Si la fecha inicial es menor o igual a la fecha final seleccionada
+      while (dateObjStart <= dateObjEnd) {
+        const totalDiasMes = new Date(dateObjStart.getFullYear(), dateObjStart.getMonth() + 1, 0).getDate(); 4
+        if (resultado >= totalDiasMes) {
+          months++;
+          resultado = resultado - totalDiasMes
+        } else {
+          days = resultado;
+        }
+        if (months >= 12) {
+          years++;
+          months = 0
+        }
+        dateObjStart.setMonth(dateObjStart.getMonth() + 1);
       }
-      if (months < 0) {
-        years--;
-        months += 12;
-      }
-  
       return {
-        ...fecha,
-        days,
-        months,
-        years,
-      };
+        ...fecha, days, months, years
+      }
     }));
   }, [fechas]);
 
@@ -169,55 +171,54 @@ function App() {
   }
 
   const calcFechaGenerales = () => {
-    let totalDays = 0;
-    let totalMonths = 0;
-    let totalYears = 0;
-  
+    let years = 0;
+    let months = 0;
+    let days = 0;
+
     fechasModificadas.forEach(fecha => {
-      totalDays += fecha.days;
-      totalMonths += fecha.months;
-      totalYears += fecha.years;
+      years += fecha.years;
+      months += fecha.months;
+      days += fecha.days
+
+
+      if (months >= 11) {
+        years++;
+        months = months - 11;
+      }
+
+      if (days >= 30) {
+        months++;
+        days = days - 30;
+      }
     });
-  
-    // Ajustar desbordamientos
-    if (totalDays >= 30) {
-      totalMonths += Math.floor(totalDays / 30);
-      totalDays = totalDays % 30;
-    }
-  
-    if (totalMonths >= 12) {
-      totalYears += Math.floor(totalMonths / 12);
-      totalMonths = totalMonths % 12;
-    }
-  
-    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
-  };
-  
+
+    console.log(months);
+
+    return `${years} años, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} dias`;
+  }
+
   const calcFechaSpecific = () => {
-    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial);
-    let totalDays = 0;
-    let totalMonths = 0;
-    let totalYears = 0;
-  
+    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial !== false);
+    let years = 0;
+    let months = 0;
+    let days = 0;
     fechasSpecific.forEach(fecha => {
-      totalDays += fecha.days;
-      totalMonths += fecha.months;
-      totalYears += fecha.years;
+      years += fecha.years;
+      months += fecha.months;
+      days += fecha.days
+
+      if (months >= 11) {
+        years++;
+        months = months - 11;
+      }
+
+      if (days >= 30) {
+        months++;
+        days = days - 30;
+      }
     });
-  
-    // Ajustar desbordamientos
-    if (totalDays >= 30) {
-      totalMonths += Math.floor(totalDays / 30);
-      totalDays = totalDays % 30;
-    }
-  
-    if (totalMonths >= 12) {
-      totalYears += Math.floor(totalMonths / 12);
-      totalMonths = totalMonths % 12;
-    }
-  
-    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
-  };
+    return `${years} ${years === 1 ? 'año' : 'años'}, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} ${days === 1 ? 'dia' : 'dias'}`;
+  }
 
   const handleCalcDatesGeneral = () => {
     setResultadoSpecific('');
@@ -244,124 +245,127 @@ function App() {
   }
 
   return (
-    <>
-      <div className=' bg-indigo-700 p-16 shadow-gray-900'>
-        <div className='bg-white max-w-3xl shadow-lg rounded-lg p-7 mx-auto'>
-          <h1 className="text-xl md:text-3xl uppercase text-center">Calculadora de Fechas</h1>
-          {/* Logos laterales */}
-			    <img src="/logo-left.png" alt="Logo Izquierdo" className="absolute left-[-50px] w-16 h-16" />
-          <img src="/logo-right.png" alt="Logo Derecho" className="absolute right-[-50px] w-16 h-16" />
-          <div className="flex justify-center">
-            <button
-              className="bg-indigo-800 py-2 px-6 rounded-md text-white font-bold m-5 hover:bg-indigo-900 uppercase"
-              onClick={() => setIsOpen(true)}
-            >Registrar Fecha</button>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">      
+        <div className=' bg-indigo-900 p-16 shadow-gray-900'>        
+          <div className='bg-white max-w-3xl shadow-lg rounded-lg p-7 mx-auto'>
+            <img src="../public/Logo_Icarus.png" alt="Logo Izquierdo" className="rounded float-start w-24 h-24 mx-4" />          
+            <img src="../public/Quimeras_Logo.png" alt="Logo Derecho" className="rounded float-end w-24 h-24 mx-4" />   
+            <h1 className="text-xl md:text-3xl uppercase text-center">Calculadora de Fechas</h1>
+
+            <div className="flex justify-center">
+              <button
+                className="bg-indigo-800 py-2 px-6 rounded-md text-white font-bold m-5 hover:bg-indigo-900 uppercase"
+                onClick={() => setIsOpen(true)}
+              >Registrar Fecha</button>
+            </div>
           </div>
         </div>
-        {/* Pie de página */}
-          <footer className="text-sm text-gray-500 mt-4 text-center border-t pt-2 w-full">
-          </footer>
-      </div>
 
-      {isOpen &&
-        <Modal
-          handleClosedModal={handleClosedModal}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          handleRegistrarFecha={handleRegistrarFecha}
-          startDate={startDate}
-          endDate={endDate}
-          messageError={messageError}
-          isSpecial={isSpecial}
-          setIsSpecial={setIsSpecial}
-          editingId={editingId}
-        />
-      }
+        {isOpen &&
+          <Modal
+            handleClosedModal={handleClosedModal}
+            setStartDate={setStartDate}
+            setEndDate={setEndDate}
+            handleRegistrarFecha={handleRegistrarFecha}
+            startDate={startDate}
+            endDate={endDate}
+            messageError={messageError}
+            isSpecial={isSpecial}
+            setIsSpecial={setIsSpecial}
+            editingId={editingId}
+          />
+        }
 
-      {
-        fechasModificadas.length === 0
-          ?
-          <p className='text-center mt-7 text-xl font-medium'>No hay registros</p>
-          :
-          <>
-            <p className='text-center mt-7 text-xl font-medium'>Fechas Registradas</p>
+        {
+          fechasModificadas.length === 0
+            ?
+            <p className='text-center mt-7 text-xl font-medium'>No hay registros</p>
+            :
+            <>
+              <p className='text-center mt-7 text-xl font-medium'>Fechas Registradas</p>
 
-            <ul className='w-3/4 md:w-2/5 mx-auto mt-5'>
-              {fechasModificadas.map(fecha => (
+              <ul className='w-3/4 md:w-2/5 mx-auto mt-5'>
+                {fechasModificadas.map(fecha => (
 
-                <SwipeableList
-                  key={fecha.id}
-                >
-                  <SwipeableListItem
-                    leadingActions={leadingActions(fecha.id)}
-                    trailingActions={trailingActions(fecha.id)}
+                  <SwipeableList
+                    key={fecha.id}
                   >
-                    <li
-                      className={`w-full sombra p-4 mb-5 text-center ${fecha.isSpecial ? 'bg-yellow-400' : 'bg-white'}`}
+                    <SwipeableListItem
+                      leadingActions={leadingActions(fecha.id)}
+                      trailingActions={trailingActions(fecha.id)}
                     >
-                      <p className='font-medium'>{formatFecha(fecha)}</p>
-                    </li>
+                      <li
+                        className={`w-full sombra p-4 mb-5 text-center ${fecha.isSpecial ? 'bg-yellow-400' : 'bg-white'}`}
+                      >
+                        <p className='font-medium'>{formatFecha(fecha)}</p>
+                      </li>
 
-                  </SwipeableListItem>
-                </SwipeableList>
-              ))}
-            </ul>
+                    </SwipeableListItem>
+                  </SwipeableList>
+                ))}
+              </ul>
 
-            {
-              fechasModificadas.length > 1 &&
-              <>
-                <div className='flex flex-col sm:flex-row justify-center gap-4 mt-10 mb-10 mx-10'>
-                  <button
-                    onClick={() => handleCalcDatesGeneral()}
-                    className='bg-indigo-700 p-3 rounded-md text-white font-bold  hover:bg-indigo-800 uppercase transition-colors'
-                  >Calcular Fechas Generales</button>
-                  <button
-                    onClick={() => handleCalcDatesSpecific()}
-                    className='bg-indigo-700 p-3 rounded-md text-white font-bold  hover:bg-indigo-800 uppercase  transition-colors'
-                  >Calcular Fechas Especificas</button>
-                </div>
+              {
+                fechasModificadas.length > 1 &&
+                <>
+                  <div className='flex flex-col sm:flex-row justify-center gap-4 mt-10 mb-10 mx-10'>
+                    <button
+                      onClick={() => handleCalcDatesGeneral()}
+                      className='bg-indigo-700 p-3 rounded-md text-white font-bold  hover:bg-indigo-800 uppercase transition-colors'
+                    >Calcular Fechas Generales</button>
+                    <button
+                      onClick={() => handleCalcDatesSpecific()}
+                      className='bg-indigo-700 p-3 rounded-md text-white font-bold  hover:bg-indigo-800 uppercase  transition-colors'
+                    >Calcular Fechas Especificas</button>
+                  </div>
 
-                {
-                  loading ?
-                    <div className="sweet-loading flex justify-center mb-10">
-                      <SyncLoader
-                        color="#332d97"
-                        cssOverride={{}}
-                        loading
-                        margin={8}
-                        size={20}
-                        speedMultiplier={0.7}
-                      />
-                    </div>
+                  {
+                    loading ?
+                      <div className="sweet-loading flex justify-center mb-10">
+                        <SyncLoader
+                          color="#332d97"
+                          cssOverride={{}}
+                          loading
+                          margin={8}
+                          size={20}
+                          speedMultiplier={0.7}
+                        />
+                      </div>
 
-                    :
-                    <>
-                      {
-                        respuesta &&
-                        <>
-                          {
-                            resultado &&
-                            <p
-                              className='mx-auto w-4/5 sm:w-2/5 sombra p-4 bg-white text-center rounded-lg mt-10 mb-10 font-bold text-xl '
-                            >{resultado}</p>
-                          }
+                      :
+                      <>
+                        {
+                          respuesta &&
+                          <>
+                            {
+                              resultado &&
+                              <p
+                                className='mx-auto w-4/5 sm:w-2/5 sombra p-4 bg-white text-center rounded-lg mt-10 mb-10 font-bold text-xl '
+                              >{resultado}</p>
+                            }
 
-                          {
-                            resultadoSpecific &&
-                            <p
-                              className='mx-auto w-4/5 sm:w-2/5 sombra p-4 text-center rounded-lg mt-10 mb-10 font-bold text-xl bg-white'
-                            >{resultadoSpecific}</p>
-                          }
-                          
-                        </>
-                      }
-                    </>
-                }
-              </>
-            }
-          </>
-      }
-    </>
+                            {
+                              resultadoSpecific &&
+                              <p
+                                className='mx-auto w-4/5 sm:w-2/5 sombra p-4 text-center rounded-lg mt-10 mb-10 font-bold text-xl bg-white'
+                              >{resultadoSpecific}</p>
+                            }
+                            
+                          </>
+                        }
+                      </>
+                  }
+                </>
+              }                        
+            </>          
+        } 
+               
+      </main> 
+        <footer className="bg-gray-800 text-white text-center p-4 w-full">
+          Copyright © Consultora Quimeras e Icarus Consultores - Desarrollado por Ing. Joel Llanos - Cel. 72549764
+        </footer>
+    </div>  
   )
 }
 
