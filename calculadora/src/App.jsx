@@ -248,7 +248,9 @@ function App() {
       <div className=' bg-indigo-700 p-16 shadow-gray-900'>
         <div className='bg-white max-w-3xl shadow-lg rounded-lg p-7 mx-auto'>
           <h1 className="text-xl md:text-3xl uppercase text-center">Calculadora de Fechas</h1>
-
+          {/* Logos laterales */}
+			    <img src="/logo-left.png" alt="Logo Izquierdo" className="absolute left-[-50px] w-16 h-16" />
+          <img src="/logo-right.png" alt="Logo Derecho" className="absolute right-[-50px] w-16 h-16" />
           <div className="flex justify-center">
             <button
               className="bg-indigo-800 py-2 px-6 rounded-md text-white font-bold m-5 hover:bg-indigo-900 uppercase"
@@ -256,6 +258,9 @@ function App() {
             >Registrar Fecha</button>
           </div>
         </div>
+        {/* Pie de página */}
+          <footer className="text-sm text-gray-500 mt-4 text-center border-t pt-2 w-full">
+          </footer>
       </div>
 
       {isOpen &&
