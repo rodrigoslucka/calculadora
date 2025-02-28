@@ -30,38 +30,43 @@ function App() {
 
 
   useEffect(() => {
-    // Hacer los calculos aqui
     setFechasModificadas(fechas.map(fecha => {
       const dateObjStart = new Date(fecha.startDate + 'T00:00:00');
       const dateObjEnd = new Date(fecha.endDate + 'T00:00:00');
-
-      // calculamos el Total de dias trabajados en las fechas seleccionadas
+  
+      // Calculamos la diferencia en milisegundos
       const differenceInMilliseconds = dateObjEnd - dateObjStart;
-      let resultado = differenceInMilliseconds / (1000 * 60 * 60 * 24) + 1;
-
-      // Operacion para cada fecha
-      let days = 0;
-      let months = 0;
-      let years = 0;
-
-      // Si la fecha inicial es menor o igual a la fecha final seleccionada
-      while (dateObjStart <= dateObjEnd) {
-        const totalDiasMes = new Date(dateObjStart.getFullYear(), dateObjStart.getMonth() + 1, 0).getDate(); 4
-        if (resultado >= totalDiasMes) {
-          months++;
-          resultado = resultado - totalDiasMes
-        } else {
-          days = resultado;
-        }
-        if (months >= 12) {
-          years++;
-          months = 0
-        }
-        dateObjStart.setMonth(dateObjStart.getMonth() + 1);
+      const totalDias = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24)) + 1;
+  
+      // Calculamos años, meses y días
+      let years = dateObjEnd.getFullYear() - dateObjStart.getFullYear();
+      let months = dateObjEnd.getMonth() - dateObjStart.getMonth();
+      let days = dateObjEnd.getDate() - dateObjStart.getDate();
+  
+      // Ajustamos los meses y días si es necesario
+      if (days < 0) {
+        months--;
+        const lastDayOfMonth = new Date(dateObjEnd.getFullYear(), dateObjEnd.getMonth(), 0).getDate();
+        days += lastDayOfMonth;
       }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+  
+      // Si los días coinciden con la duración del mes, convertimos a meses
+      const daysInMonth = new Date(dateObjStart.getFullYear(), dateObjStart.getMonth() + 1, 0).getDate();
+      if (totalDias === daysInMonth) {
+        months++;
+        days = 0;
+      }
+  
       return {
-        ...fecha, days, months, years
-      }
+        ...fecha,
+        days,
+        months,
+        years,
+      };
     }));
   }, [fechas]);
 
@@ -171,54 +176,55 @@ function App() {
   }
 
   const calcFechaGenerales = () => {
-    let years = 0;
-    let months = 0;
-    let days = 0;
-
+    let totalDays = 0;
+    let totalMonths = 0;
+    let totalYears = 0;
+  
     fechasModificadas.forEach(fecha => {
-      years += fecha.years;
-      months += fecha.months;
-      days += fecha.days
-
-
-      if (months >= 11) {
-        years++;
-        months = months - 11;
-      }
-
-      if (days >= 30) {
-        months++;
-        days = days - 30;
-      }
+      totalDays += fecha.days;
+      totalMonths += fecha.months;
+      totalYears += fecha.years;
     });
-
-    console.log(months);
-
-    return `${years} años, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} dias`;
-  }
-
+  
+    // Ajustar desbordamientos
+    if (totalDays >= 30) {
+      totalMonths += Math.floor(totalDays / 30);
+      totalDays = totalDays % 30;
+    }
+  
+    if (totalMonths >= 12) {
+      totalYears += Math.floor(totalMonths / 12);
+      totalMonths = totalMonths % 12;
+    }
+  
+    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
+  };
+  
   const calcFechaSpecific = () => {
-    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial !== false);
-    let years = 0;
-    let months = 0;
-    let days = 0;
+    const fechasSpecific = fechasModificadas.filter(fecha => fecha.isSpecial);
+    let totalDays = 0;
+    let totalMonths = 0;
+    let totalYears = 0;
+  
     fechasSpecific.forEach(fecha => {
-      years += fecha.years;
-      months += fecha.months;
-      days += fecha.days
-
-      if (months >= 11) {
-        years++;
-        months = months - 11;
-      }
-
-      if (days >= 30) {
-        months++;
-        days = days - 30;
-      }
+      totalDays += fecha.days;
+      totalMonths += fecha.months;
+      totalYears += fecha.years;
     });
-    return `${years} ${years === 1 ? 'año' : 'años'}, ${months} ${months === 1 ? 'mes' : 'meses'} , ${days} ${days === 1 ? 'dia' : 'dias'}`;
-  }
+  
+    // Ajustar desbordamientos
+    if (totalDays >= 30) {
+      totalMonths += Math.floor(totalDays / 30);
+      totalDays = totalDays % 30;
+    }
+  
+    if (totalMonths >= 12) {
+      totalYears += Math.floor(totalMonths / 12);
+      totalMonths = totalMonths % 12;
+    }
+  
+    return `${totalYears} ${totalYears === 1 ? 'año' : 'años'}, ${totalMonths} ${totalMonths === 1 ? 'mes' : 'meses'}, ${totalDays} ${totalDays === 1 ? 'día' : 'días'}`;
+  };
 
   const handleCalcDatesGeneral = () => {
     setResultadoSpecific('');
@@ -249,8 +255,8 @@ function App() {
       <main className="flex-grow">      
         <div className=' bg-indigo-900 p-16 shadow-gray-900'>        
           <div className='bg-white max-w-3xl shadow-lg rounded-lg p-7 mx-auto'>
-            <img src="/Logo_Icarus.png" alt="Logo Izquierdo" className="rounded float-start w-24 h-24 mx-4" />          
-            <img src="/Quimeras_Logo.png" alt="Logo Derecho" className="rounded float-end w-24 h-24 mx-4" />   
+            <img src="/Quimeras_Logo.png" alt="Logo Izquierdo" className="rounded float-start w-24 h-24 mx-4" />          
+            <img src="/Logo_Icarus.png " alt="Logo Derecho" className="rounded float-end w-24 h-24 mx-4" />   
             <h1 className="text-xl md:text-3xl uppercase text-center">Calculadora de Fechas</h1>
 
             <div className="flex justify-center">
@@ -363,7 +369,7 @@ function App() {
                
       </main> 
         <footer className="bg-gray-800 text-white text-center p-4 w-full">
-          Copyright © Consultora Quimeras e Icarus Consultores - Desarrollado por Ing. Joel Llanos - Cel. 72549764
+          Copyright © Consultora Quimeras e Icarus Consultores - Desarrollado por Ing. Joel Llanos Puita / Rodrigo Slucka Zárate - Cel. 72549764 - Cel. 60458465
         </footer>
     </div>  
   )
